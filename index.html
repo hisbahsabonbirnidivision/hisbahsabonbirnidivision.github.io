@@ -1,75 +1,112 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Hisbah Sabon Birni — Member Verification</title>
-  <meta name="description" content="Official Hisbah Sabon Birni Division member verification portal." />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hisbah Sabon Birni Division - Member Verification</title>
   <style>
-    :root{--green:#0b6623;--bg:#f4f7f6;--card:#fff;--muted:#666}
-    *{box-sizing:border-box}
-    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:#111}
-    .wrap{max-width:920px;margin:28px auto;padding:18px}
-    header{background:var(--green);color:#fff;padding:18px;border-radius:10px 10px 8px 8px;text-align:center}
-    header img{height:64px;vertical-align:middle;margin-right:12px;border-radius:6px;object-fit:cover}
-    header h1{display:inline-block;font-size:20px;margin:0;vertical-align:middle}
-    .lead{margin-top:12px;text-align:center;color:#0b3d18;font-weight:600}
-    .card{background:var(--card);padding:18px;border-radius:10px;margin-top:18px;box-shadow:0 8px 24px rgba(10,20,10,0.04)}
-    .hero{display:flex;flex-direction:column;align-items:center;gap:12px}
-    .btn{background:var(--green);color:#fff;padding:12px 18px;border-radius:8px;border:0;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block}
-    .muted{color:var(--muted)}
-    .contact{margin-top:12px;font-weight:600;color:#0b3d18}
-    footer{margin-top:18px;text-align:center;color:#fff;background:#0b6623;padding:12px;border-radius:8px}
-    @media(min-width:720px){ .hero{flex-direction:row;justify-content:space-between;width:100%} }
-    .small{font-size:13px;color:var(--muted)}
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f6f9f6;
+      color: #222;
+      text-align: center;
+      padding: 40px;
+    }
+    h1 {
+      color: #006400;
+    }
+    input {
+      padding: 10px;
+      width: 80%;
+      max-width: 400px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #006400;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #009900;
+    }
+    .result {
+      margin-top: 30px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      background: white;
+      display: inline-block;
+      padding: 20px;
+      width: 90%;
+      max-width: 500px;
+    }
+    img {
+      max-width: 150px;
+      border-radius: 10px;
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <!-- If you have a logo file in repo, change src to /logo.png -->
-      <div style="display:inline-flex;align-items:center">
-        <img id="logo" src="logo.png" alt="Hisbah Logo" onerror="this.style.display='none'">
-        <h1>HISBAH SABON BIRNI DIVISION</h1>
-      </div>
-      <div class="small">Official Member Verification Portal</div>
-    </header>
+  <h1>Hisbah Sabon Birni Division</h1>
+  <h2>Member Verification Portal</h2>
 
-    <div class="card">
-      <div class="hero">
-        <div style="flex:1;text-align:left">
-          <h2 style="margin:6px 0 4px">Welcome</h2>
-          <p class="muted">This portal allows officials and the public to verify registered Hisbah members by their Identification No.</p>
-          <p class="contact">Contact: +234 802 375 0523</p>
-        </div>
+  <input type="text" id="search" placeholder="Enter Full Name or ID Number..." />
+  <button onclick="verifyMember()">Verify Member</button>
 
-        <div style="min-width:220px;text-align:center">
-          <a class="btn" href="verify.html">🔍 Verify Member</a>
-          <div class="small" style="margin-top:8px">Click to open the verification page</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="card" style="margin-top:12px">
-      <h3 style="margin:0 0 8px">How it works</h3>
-      <ol class="small" style="padding-left:18px;margin:0">
-        <li>Go to <strong>Verify Member</strong>.</li>
-        <li>Enter a member's <strong>IDENTIFICATION NO</strong>.</li>
-        <li>If found, the system will display the member's name, team and photo.</li>
-      </ol>
-    </div>
-
-    <footer>
-      &copy; <span id="year"></span> HISBAH SABON BIRNI DIVISION — Supported by Sabon Birni Local Government
-    </footer>
-  </div>
+  <div id="result" class="result" style="display:none;"></div>
 
   <script>
-    // set year
-    document.getElementById('year').textContent = new Date().getFullYear();
+    async function verifyMember() {
+      const input = document.getElementById("search").value.trim().toLowerCase();
+      const resultDiv = document.getElementById("result");
+      resultDiv.style.display = "none";
+      resultDiv.innerHTML = "";
 
-    // If you stored the logo under images/logo.png or logo.png, adjust accordingly.
-    // If you want to use a remote logo url, change src attribute manually in the file.
+      if (!input) {
+        alert("Please enter a name or ID number");
+        return;
+      }
+
+      try {
+        const response = await fetch("HISBAH MEMBERS VERIFICATION.csv");
+        const data = await response.text();
+
+        const rows = data.split("\n").slice(1); // skip header
+        let found = false;
+
+        for (let row of rows) {
+          const [name, id, team, photo] = row.split(",");
+          if (!name || !id) continue;
+
+          if (name.toLowerCase().includes(input) || id.toLowerCase().includes(input)) {
+            found = true;
+            resultDiv.innerHTML = `
+              <h3>✅ Verified Member</h3>
+              <p><strong>Full Name:</strong> ${name}</p>
+              <p><strong>Identification No:</strong> ${id}</p>
+              <p><strong>Team:</strong> ${team}</p>
+              <img src="${photo}" alt="Member Photo" />
+            `;
+            resultDiv.style.display = "block";
+            break;
+          }
+        }
+
+        if (!found) {
+          resultDiv.innerHTML = `<h3 style="color:red;">❌ Record Not Found</h3>`;
+          resultDiv.style.display = "block";
+        }
+
+      } catch (error) {
+        alert("Error loading member data.");
+        console.error(error);
+      }
+    }
   </script>
 </body>
 </html>
